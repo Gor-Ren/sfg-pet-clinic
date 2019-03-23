@@ -17,6 +17,10 @@ public abstract class AbstractMapService<T extends BaseEntity, ID extends Long> 
     }
 
     public T save(T object) {
+        Objects.requireNonNull(object);
+        if (object.getId() == null) {
+            object.setId(getNextId());
+        }
         map.put(object.getId(), object);
         return object;
     }
@@ -27,5 +31,11 @@ public abstract class AbstractMapService<T extends BaseEntity, ID extends Long> 
 
     public void deleteById(ID id) {
         map.remove(id);
+    }
+
+    private Long getNextId() {
+        return map.keySet().stream()
+                .max(Comparator.naturalOrder())
+                .orElse(1L);
     }
 }
